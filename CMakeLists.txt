@@ -1,0 +1,23 @@
+cmake_minimum_required(VERSION 3.20)
+project(flow LANGUAGES CXX)
+
+option(ENABLE_CUDA "Build the CUDA backend" OFF)
+option(ENABLE_OPENMP "Enable OpenMP CPU parallelism" ON)
+
+add_executable(flow src/main.cpp)
+target_compile_features(flow PRIVATE cxx_std_17)
+if(ENABLE_OPENMP)
+  find_package(OpenMP)
+  if(OpenMP_CXX_FOUND)
+    target_link_libraries(flow PRIVATE OpenMP::OpenMP_CXX)
+    target_compile_definitions(flow PRIVATE OPENMP=1)
+  endif()
+endif()
+
+if(ENABLE_CUDA)
+  enable_language(CUDA)
+  add_library(flow_cuda src/cuda_backend.cu)
+  set_target_properties(flow_cuda PROPERTIES CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED ON)
+  target_link_libraries(flow PRIVATE flow_cuda)
+  target_compile_definitions(flow PRIVATE CUDA=1)
+endif()
