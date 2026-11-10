@@ -1007,7 +1007,7 @@ int main(int argc, char** argv) {
                 const std::string output_path = options.output_prefix + "_" + padded_number
                     + frame_number;
                 write(output_path, mesh, time);
-                if (boundary_output) {
+                if (!options.boundary_output_path.empty()) {
                     write_boundary_snapshot(boundary_output, mesh, time, options.dry_tolerance);
                 }
             }
